@@ -24,8 +24,8 @@ namespace TextChanger {
             this.btnLineReverse = new System.Windows.Forms.Button();
             this.btnToLower = new System.Windows.Forms.Button();
             this.btnToUpper = new System.Windows.Forms.Button();
-            this.textBoxSource = new System.Windows.Forms.TextBox();
-            this.textBoxNew = new System.Windows.Forms.TextBox();
+            this.sourceText = new System.Windows.Forms.TextBox();
+            this.newText = new System.Windows.Forms.TextBox();
             this.btnWordsWithUpper = new System.Windows.Forms.Button();
             this.btnWithoutSpaces = new System.Windows.Forms.Button();
             this.btnWithoutPunctuation = new System.Windows.Forms.Button();
@@ -92,19 +92,19 @@ namespace TextChanger {
             // 
             // textBoxSource
             // 
-            this.textBoxSource.Location = new System.Drawing.Point(13, 25);
-            this.textBoxSource.Multiline = true;
-            this.textBoxSource.Name = "textBoxSource";
-            this.textBoxSource.Size = new System.Drawing.Size(300, 450);
-            this.textBoxSource.TabIndex = 2;
+            this.sourceText.Location = new System.Drawing.Point(13, 25);
+            this.sourceText.Multiline = true;
+            this.sourceText.Name = "textBoxSource";
+            this.sourceText.Size = new System.Drawing.Size(300, 450);
+            this.sourceText.TabIndex = 2;
             // 
             // textBoxNew
             // 
-            this.textBoxNew.Location = new System.Drawing.Point(320, 25);
-            this.textBoxNew.Multiline = true;
-            this.textBoxNew.Name = "textBoxNew";
-            this.textBoxNew.Size = new System.Drawing.Size(300, 450);
-            this.textBoxNew.TabIndex = 3;
+            this.newText.Location = new System.Drawing.Point(320, 25);
+            this.newText.Multiline = true;
+            this.newText.Name = "textBoxNew";
+            this.newText.Size = new System.Drawing.Size(300, 450);
+            this.newText.TabIndex = 3;
             // 
             // btnWordsWithUpper
             // 
@@ -279,8 +279,8 @@ namespace TextChanger {
             this.Controls.Add(this.btnWithoutPunctuation);
             this.Controls.Add(this.btnWithoutSpaces);
             this.Controls.Add(this.btnWordsWithUpper);
-            this.Controls.Add(this.textBoxNew);
-            this.Controls.Add(this.textBoxSource);
+            this.Controls.Add(this.newText);
+            this.Controls.Add(this.sourceText);
             this.Controls.Add(this.btnToUpper);
             this.Controls.Add(this.btnToLower);
             this.Controls.Add(this.btnLineReverse);
@@ -300,8 +300,8 @@ namespace TextChanger {
 
         private System.Windows.Forms.Label labelSourceText;
         private System.Windows.Forms.Label labelNewText;
-        private System.Windows.Forms.TextBox textBoxSource;
-        private System.Windows.Forms.TextBox textBoxNew;
+        private System.Windows.Forms.TextBox sourceText;
+        private System.Windows.Forms.TextBox newText;
         private System.Windows.Forms.Button btnReplaceTexts;
         private System.Windows.Forms.Button btnLineReverse;
         private System.Windows.Forms.Button btnToLower;

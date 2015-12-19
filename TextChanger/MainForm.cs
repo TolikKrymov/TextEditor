@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace TextChanger {
     public partial class MainForm : Form {
-        //Постоянные для пользовательских размеров
+        //Sizes
         const int marginFirstColumn = 195;
         const int marginSecondColum = 109;
         
-        #region Массивы символов и строк для замены и проверок
+        #region Array of character and strings for replacing and checking
         char[] engChars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
         char[] rusChars = "йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ".ToCharArray();
         char[] engLayoutChars = "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?@#$&".ToCharArray();
@@ -30,86 +31,94 @@ namespace TextChanger {
 
         public MainForm() { InitializeComponent(); }
         
-        // Для доступа к тексту нужного поля
-        public string _Text {
-            get { if (checkBoxAutoReplace.Checked) return textBoxSource.Text; return textBoxNew.Text; }
-            set { if (checkBoxAutoReplace.Checked) textBoxSource.Text = value; else textBoxNew.Text = value; }
+        // For access to text of selected field
+        string TextInForm {
+            set {
+                if (checkBoxAutoReplace.Checked)
+                    sourceText.Text = value;
+                else
+                    newText.Text = value;
+            }
         }
 
         // Все буквы строчные
-        private void btnToLower_Click(object sender, EventArgs e) => _Text = textBoxSource.Text.ToLower();
+        private void btnToLower_Click(object sender, EventArgs e) {
+            TextInForm = sourceText.Text.ToLower();
+        }
 
         //Все буквы прописные
-        private void btnToUpper_Click(object sender, EventArgs e) => _Text = textBoxSource.Text.ToUpper();
+        private void btnToUpper_Click(object sender, EventArgs e) {
+            TextInForm = sourceText.Text.ToUpper();
+        }
 
         //Строки наоборот
         private void btnLineReverse_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(chars.Length);
             string text = string.Empty;
             int prestartLine = -1;
             for (int i = 0; i != chars.Length; i++) {
                 if (chars[i] == '\n') {
                     for (int j = i - 1; j != prestartLine; j--)
-                        text += chars[j];
-                    text += "\r\n";
+                        sb.Append(chars[j]);
+                    sb.Append("\r\n");
                     prestartLine = i;
                 }
             }
             if (prestartLine != chars.Length - 1)
                 for (int i = chars.Length - 1; i != prestartLine; i--)
-                    text += chars[i];
-            _Text = text;
+                    sb.Append(chars[i]);
+            TextInForm = sb.ToString();
         }
 
         //Все слова с большой буквы
         private void btnWordsWithUpper_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
-            int end = chars.Length;
-            for (int i = 0; i != end; i++) {
-                text += chars[i];
-                if ((chars[i] == ' ' || chars[i] == '\n') && i + 1 < end)
-                    text += chars[++i].ToString().ToUpper();
+            if (sourceText.Text.Length != 0) {
+                char[] chars = sourceText.Text.ToCharArray();
+                StringBuilder sb = new StringBuilder(chars.Length);
+                sb.Append(char.ToUpper(chars[0]));
+                for (int i = 1; i < chars.Length; i++)
+                    if (chars[i - 1] == ' ' || chars[i - 1] == '\n')
+                        sb.Append(char.ToUpper(chars[i]));
+                    else
+                        sb.Append(chars[i]);
+                TextInForm = sb.ToString();
             }
-            _Text = text;
         }
 
         //Заменить исходный текст новым
         private void btnReplaceTexts_Click(object sender, EventArgs e) {
-            textBoxSource.Text = textBoxNew.Text;
-            textBoxNew.Text = string.Empty;
+            sourceText.Text = newText.Text;
+            newText.Text = string.Empty;
         }
 
         //Без пробелов
         private void btnWithoutSpaces_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
-            foreach (char c in chars)
-                if (c != ' ')
-                    text += c;
-            _Text = text;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
+            for (int i = 0; i != chars.Length; i++)
+                if (chars[i] != ' ')
+                    sb.Append(chars[i]);
+            TextInForm = sb.ToString();
         }
 
         //Без пунктуации
         private void btnWithoutPunctuation_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(chars.Length);
             foreach (char c in chars) {
-                bool add = true;
                 foreach (char p in punctuation)
-                    if (p == c) {
-                        add = false;
-                        break;
-                    }
-                if (add)
-                    text += c;
+                    if (c == p)
+                        goto end;
+                sb.Append(c);
+                end:;
             }
-            _Text = text;
+            TextInForm = sb.ToString();
         }
 
         //Изменить раскладку
         private void btnChangeLayout_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
+            char[] chars = sourceText.Text.ToCharArray();
             if (chars.Length != 0) {
                 int engCharsCount = 0;
                 int rusCharsCount = 0;
@@ -142,34 +151,31 @@ namespace TextChanger {
                                 chars[i] = engLayoutChars[j];
                                 break;
                             }
-                string text = string.Empty;
-                foreach (char c in chars)
-                    text += c;
-                _Text = text;
+                TextInForm = new string(chars);
             }
         }
 
         //Без гласных
         private void btnWithoutVowels_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
             foreach (char c in chars) {
                 bool add = true;
-                foreach (char g in vowels)
-                    if (g == c) {
+                foreach (char v in vowels)
+                    if (v == c) {
                         add = false;
                         break;
                     }
                 if (add)
-                    text += c;
+                    sb.Append(c);
             }
-            _Text = text;
+            TextInForm = sb.ToString();
         }
 
         //Без согласных
         private void btnWithoutConsonants_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
             foreach (char c in chars) {
                 bool add = true;
                 foreach(char s in consonants)
@@ -178,39 +184,39 @@ namespace TextChanger {
                         break;
                     }
                 if (add)
-                    text += c;
+                    sb.Append(c);
             }
-            _Text = text;
+            TextInForm = sb.ToString();
         }
 
         //С пробелами через символ
         private void btnWithSpacesAfterSChar_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
             foreach (char c in chars)
                 if (c != ' ')
                     if (c != '\r' && c != '\n')
-                        text += c + " ";
+                        sb.Append(c + " ");
                     else
-                        text += c;
-            _Text = text;
+                        sb.Append(c);
+            TextInForm = sb.ToString();
         }
 
         //Включение/выключение автозамены
         private void checkBoxAutoReplace_CheckedChanged(object sender, EventArgs e) {
             labelNewText.Visible =
                 btnReplaceTexts.Visible =
-                textBoxNew.Visible =
+                newText.Visible =
                 btnReplaceTexts.Enabled = !checkBoxAutoReplace.Checked;
-            textBoxSource.Size = checkBoxAutoReplace.Checked ?
-                new Size( Size.Width - marginFirstColumn - 5 - 13         , textBoxSource.Size.Height) :
-                new Size((Size.Width - marginFirstColumn - 5 - 13 - 7) / 2, textBoxSource.Size.Height);
+            sourceText.Size = checkBoxAutoReplace.Checked ?
+                new Size( Size.Width - marginFirstColumn - 5 - 13         , sourceText.Size.Height) :
+                new Size((Size.Width - marginFirstColumn - 5 - 13 - 7) / 2, sourceText.Size.Height);
         }
 
         //По слогам
         private void btnInSyllables_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
             string word = string.Empty;
             for (int i = 0; i != chars.Length; i++) {
                 bool b = true;
@@ -222,15 +228,15 @@ namespace TextChanger {
                     }
                 if (b) {
                     if (word != string.Empty) {
-                        text += SplitWord(word);
+                        sb.Append(SplitWord(word));
                         word = string.Empty;
                     }
-                    text += chars[i];
+                    sb.Append(chars[i]);
                 }
             }
             if (word != string.Empty)
-                text += SplitWord(word);
-            _Text = text;
+                sb.Append(SplitWord(word));
+            TextInForm = sb.ToString();
         }
 
         //Деление слова на слоги, между слогами ставится дефис
@@ -268,33 +274,32 @@ namespace TextChanger {
 
         //Транслит
         private void btnTransliteration_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length * 2);
             for (int i = 0; i != chars.Length; i++) {
                 bool b = true;
                 for (int j = 0; j != rusChars.Length; j++)
                     if (chars[i] == rusChars[j]) {
-                        text += engTransl[j];
+                        sb.Append(engTransl[j]);
                         b = false;
                         break;
                     }
                 if (b)
-                    text += chars[i];
+                    sb.Append(chars[i]);
             }
-            _Text = text;
+            TextInForm = sb.ToString();
         }
 
         //Слово-строка
         private void btnWordLine_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
-            foreach (char c in chars)
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length * 2);
+            foreach (char c in sourceText.Text)
                 if (c != '\r' && c != '\n') {
-                    text += c;
+                    sb.Append(c);
                     if (c == ' ')
-                        text += "\r\n";
+                        sb.Append("\r\n");
                 }
-            _Text = text;
+            TextInForm = sb.ToString();
         }
 
         //Изменение размера окна
@@ -304,7 +309,7 @@ namespace TextChanger {
             int positionSecondColumn  = Size.Width - marginSecondColum;
             int widthTextBox          = (positionFirstColumn - 5 - 13 - 7) / 2;
             int positionLastLine      = Size.Height - 80;
-            int positionSecondTextBox = textBoxSource.Location.X + widthTextBox + 5;
+            int positionSecondTextBox = sourceText.Location.X + widthTextBox + 5;
             //Первый столбец кнопок
             btnLineReverse.Location              = new Point(positionFirstColumn, btnLineReverse.Location.Y);
             btnToLower.Location                  = new Point(positionFirstColumn, btnToLower.Location.Y);
@@ -327,51 +332,49 @@ namespace TextChanger {
             btnReplaceTexts.Location     = new Point(positionFirstColumn, positionLastLine);
             checkBoxAutoReplace.Location = new Point(positionSecondColumn, positionLastLine);
             //Изменение размеров полей ввода
-            textBoxNew.Size = textBoxSource.Size = new Size(widthTextBox, positionLastLine + 10);
+            newText.Size = sourceText.Size = new Size(widthTextBox, positionLastLine + 10);
             //Изменение второго поля ввода и надписи "Новый текст"
-            textBoxNew.Location   = new Point(positionSecondTextBox, textBoxNew.Location.Y);
+            newText.Location   = new Point(positionSecondTextBox, newText.Location.Y);
             labelNewText.Location = new Point(positionSecondTextBox, labelNewText.Location.Y);
         }
 
         //Символ-строка
         private void btnCharLine_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
-            foreach (char c in chars)
-                if (c != '\r') {
-                    if (c != '\n')
-                        text += c + "\r\n";
-                }
-                else
-                    text += "\r\n";
-            _Text = text;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length * 3);
+            foreach (char c in chars) {
+                if (c != '\r' && c != '\n')
+                    sb.Append(c);
+                sb.Append("\r\n");
+            }
+            TextInForm = sb.ToString();
         }
 
         //Без лишних пробелов
         private void btnWithoutSuperfluousSpaces_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.Trim().ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.Trim().ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
             if (chars.Length > 0) {
-                text += chars[0];
+                sb.Append(chars[0]);
                 for (int i = 1; i != chars.Length - 1; i++)
                     if (chars[i] != ' ')
-                        text += chars[i];
+                        sb.Append(chars[i]);
                     else if (chars[i - 1] != ' ' && chars[i - 1] != '\n' && chars[i + 1] != '\r')
-                        text += chars[i];
+                        sb.Append(chars[i]);
                 if (chars.Length > 1 && chars[chars.Length - 1] != ' ')
-                    text += chars[chars.Length - 1];
-                _Text = text;
+                    sb.Append(chars[chars.Length - 1]);
+                TextInForm = sb.ToString();
             }
         }
 
         //Без абзацев
         private void btnWithoutParagraph_Click(object sender, EventArgs e) {
-            char[] chars = textBoxSource.Text.ToCharArray();
-            string text = string.Empty;
+            char[] chars = sourceText.Text.ToCharArray();
+            StringBuilder sb = new StringBuilder(sourceText.Text.Length);
             foreach (char c in chars)
                 if (c != '\r' && c != '\n')
-                    text += c;
-            _Text = text;
+                    sb.Append(c);
+            TextInForm = sb.ToString();
         }
     }
 }
