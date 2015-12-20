@@ -12,7 +12,7 @@ namespace TextChanger {
         
         #region Array of character and strings for replacing and checking
         char[] engChars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
-        char[] rusChars = "йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ".ToCharArray();
+        char[] rusChars = "йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ".ToCharArray();
         char[] engLayoutChars = "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?@#$&".ToCharArray();
         char[] rusLayoutChars = "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,\"№;?".ToCharArray();
         char[] vowels = "уеыаояиюэёУЕЫАОЯИЮЭЁeyuioaEYUIOA".ToCharArray();
@@ -22,10 +22,10 @@ namespace TextChanger {
         string[] engTransl = new string[] {
             "j", "c", "u", "k", "e", "n", "g", "sh", "shh", "z", "h",
             "\"", "f", "y", "v", "a", "p", "r", "o", "l", "d", "zh",
-            "je", "ya", "ch", "s", "m", "i", "t", "'", "b", "yu",
+            "je", "ya", "ch", "s", "m", "i", "t", "'", "b", "yu", "yo",
             "J", "C", "U", "K", "E", "N", "G", "SH", "Shh", "Z", "H",
             "\"", "F", "Y", "V", "A", "P", "R", "O", "L", "D", "Zh",
-            "Je", "Ya", "Ch", "S", "M", "I", "T", "'", "B", "Yu"
+            "Je", "Ya", "Ch", "S", "M", "I", "T", "'", "B", "Yu", "Yo"
         };
         #endregion
 
