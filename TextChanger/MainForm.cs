@@ -241,35 +241,39 @@ namespace TextChanger {
 
         //Деление слова на слоги, между слогами ставится дефис
         string SplitWord(string word) {
-            string value = string.Empty;
-            char[] cWord = word.ToCharArray();
-            Stack<char> stack = new Stack<char>();
-            stack.Push(cWord[cWord.Length - 1]);
-            for (int j = cWord.Length - 1; j > 0; j--) {
-                bool isntVowel = true;
-                foreach (char c in rusVowels)
-                    if (cWord[j] == c) {
-                        isntVowel = false;
-                        stack.Push(cWord[j]);
-                        j--;
-                        if (j != 0) {
-                            bool isNotVowel = true;
-                            foreach (char c2 in rusVowels)
-                                if (c2 == cWord[j]) {
-                                    isNotVowel = false;
-                                }
-                            if (isNotVowel)
-                                stack.Push(cWord[j]);
+            bool[] isVowel = new bool[word.Length];
+            char[] chars = word.ToCharArray();
+            for (int i = 0; i != chars.Length; i++)
+                foreach (char v in vowels)
+                    if (chars[i] == v) {
+                        isVowel[i] = true;
+                        break;
+                    }
+            StringBuilder sb = new StringBuilder(word.Length * 2);
+            Stack<char> stack = new Stack<char>(word.Length * 2);
+            for (int i = chars.Length - 1; i > 0; i--) {
+                if (isVowel[i]) {
+                    stack.Push(chars[i]);
+                    if (i > 0) {
+                        if (isVowel[i - 1])
                             stack.Push('-');
+                        else {
+                            for (int j = i - 1; j > 0; j--)
+                                if (isVowel[j]) {
+                                    stack.Push(chars[--i]);
+                                    stack.Push('-');
+                                    break;
+                                }
                         }
                     }
-                if (isntVowel)
-                    stack.Push(cWord[j]);
+                }
+                else
+                    stack.Push(chars[i]);
             }
-            stack.Push(cWord[0]);
-            for (int j = stack.Count - 1; j != 0; j--)
-                value += stack.Pop();
-            return value;
+            sb.Append(chars[0]);
+            while (stack.Count != 0)
+                sb.Append(stack.Pop());
+            return sb.ToString();
         }
 
         //Транслит
